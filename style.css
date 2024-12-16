@@ -1,0 +1,12 @@
+canvas {
+    border: 1px solid black;
+    /* margin: 0 auto; */
+    /* background-color: yellow; */
+
+}
+
+#canvas-div{
+    width: 300px;
+    height: 150px;
+    background-color: aquamarine;
+}
