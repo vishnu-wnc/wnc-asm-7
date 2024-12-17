@@ -8,6 +8,8 @@ var ctx = canvas.getContext('2d');
 
 var canvasDiv = document.getElementById("canvas-div");
 
+var removeCircleButton = document.querySelector('#remove-circle-button')
+
 //Map
 var circleMap = new Map();
 
@@ -181,3 +183,38 @@ moveListner = (e) => {
     }
 }
 
+
+
+//Removing the circle button after clicking
+removeCircleButton.addEventListener("click", removeCircle);
+
+/**
+ * getting object key by value used for deletion from map
+ * @param {Map} map
+ * @param {Object} object  
+ */
+function getKeyByValue(map, object) {
+    for(let [key, value] of map.entries()) {
+        if(value === object)
+            return key;
+    }
+}
+
+
+/**
+ * For delayed deletion of circle
+ */
+function removeCircle() {
+    setTimeout(timeOutRemoveCircle, 5000);
+}
+
+/**
+ * For deletion of selected circle from canvas 
+ */
+function timeOutRemoveCircle() {
+    console.log("remove button clicked")
+    const keyOfSelectedCircle = getKeyByValue(circleMap, clickedCircle) 
+    console.log(keyOfSelectedCircle);
+    circleMap.delete(keyOfSelectedCircle);
+    drawOnCanvas();
+}
