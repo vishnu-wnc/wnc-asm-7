@@ -24,18 +24,18 @@ class Circle {
     constructor(x, y, radius, color) {
         this.x = x;
         this.y = y;
-        this.radius = radius;   
+        this.radius = radius;
         this.color = color;
     }
 
     drawShape(ctx) {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
         ctx.fill();
     }
 
-    isSelected(mouseOnX, mouseOnY)
-    {
+    isSelected(mouseOnX, mouseOnY) {
         const distance = Math.sqrt((mouseOnX - this.x) ** 2 + (mouseOnY - this.y) ** 2);
         return distance <= this.radius;
     }
@@ -46,23 +46,36 @@ class Circle {
  */
 function upload() {
     image.src = URL.createObjectURL(file.files[0]);
-    document.getElementById('canvas-div').style.backgroundImage = "url('" + image.src + "')";
+    let canvasContainer = document.getElementById('canvas-div');
+    canvasContainer.style.backgroundImage = "url('" + image.src + "')";
+    canvasContainer.style.backgroundSize = "cover";
+    canvasContainer.style.backgroundPosition = "center";
+    canvasContainer.style.backgroundRepeat = "no-repeat";
     canvas.style.opacity = 1;
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 }
 
 
 //radius of every circle
-const radius = canvas.height/10;
+// const radius = canvas.height / 10;
+const radius = 30;
 var index = 0;
 
+//Function to check if circle is inside canvas
+function isInsideCanvas(circle) {
+    if (circle.x - circle.radius < 0 || circle.x + circle.radius > canvas.width || circle.y - circle.radius < 0 || circle.y + circle.radius > canvas.height)
+        return false;
+    return true;
+}
 
 /**
  * Adding circle to the canvas after clicking add circle button
  */
 addCircleButton.addEventListener("click", () => {
-    let x = Math.random()*canvas.width;
-    let y = Math.random()*canvas.height;
-    if(x > radius && y > radius && x < canvas.width-radius && y < canvas.height-radius){
+    let x = Math.random() * canvas.width;
+    let y = Math.random() * canvas.height;
+    if (isInsideCanvas(new Circle(x, y, radius, "red"))) {
         const circle = new Circle(x, y, radius, "red");
         circleMap.set(index, circle);
         index++;
@@ -77,7 +90,7 @@ addCircleButton.addEventListener("click", () => {
  */
 function drawOnCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let cir of circleMap.values())
+    for (let cir of circleMap.values())
         cir.drawShape(ctx);
 }
 
@@ -89,7 +102,7 @@ function drawOnCanvas() {
  */
 function mousePosition(event) {
     const area = canvas.getBoundingClientRect();
-    
+
     // Calculate scaling factors for both axes
     const scalingOfX = canvas.width / area.width;
     const scalingOfY = canvas.height / area.height;
@@ -101,16 +114,14 @@ function mousePosition(event) {
     return { mouseOnX, mouseOnY };
 }
 
-
-
 /**
  * For selecting the circle inside the canvas
  */
-canvas.addEventListener("mousedown", function(event) {
-    const {mouseOnX, mouseOnY} = mousePosition(event);
+canvas.addEventListener("mousedown", function (event) {
+    const { mouseOnX, mouseOnY } = mousePosition(event);
     let i = 0;
-    for(let cir of circleMap.values()){
-        if(cir.isSelected(mouseOnX, mouseOnY)){
+    for (let cir of circleMap.values()) {
+        if (cir.isSelected(mouseOnX, mouseOnY)) {
             window.removeEventListener("keydown", moveListner);
             clickedCircle = cir;
             console.log("selected");
@@ -121,50 +132,46 @@ canvas.addEventListener("mousedown", function(event) {
     }
 });
 
-
 /**
  * for moving the object using arrow keys
  */
-function moveObject(){
+function moveObject() {
     window.addEventListener("keydown", moveListner);
 }
 
-
-
 // All four function are used to move the circle
 function moveUp() {
-    clickedCircle.y -= movePx;
-    drawOnCanvas(); 
+    clickedCircle.y = Math.max(clickedCircle.radius, clickedCircle.y - movePx);
+    drawOnCanvas();
 }
 
 function moveDown() {
-    clickedCircle.y += movePx;
-    drawOnCanvas(); 
+    clickedCircle.y = Math.min(canvas.height - clickedCircle.radius, clickedCircle.y + movePx);
+    drawOnCanvas();
 }
 
 function moveLeft() {
-    clickedCircle.x -= movePx;
-    drawOnCanvas(); 
+    clickedCircle.x = Math.max(clickedCircle.radius, clickedCircle.x - movePx);
+    drawOnCanvas();
 }
 
 function moveRight() {
-    clickedCircle.x += movePx;
-    drawOnCanvas(); 
+    clickedCircle.x = Math.min(canvas.width - clickedCircle.radius, clickedCircle.x + movePx);
+    drawOnCanvas();
 }
-
 
 /**
  * taking event from keyboard and using all arrow keys
  */
-moveListner = (e) =>
-    {
-        if (e.key === "ArrowUp") {
-            moveUp();
-        } else if (e.key === "ArrowDown") {
-            moveDown();
-        } else if (e.key === "ArrowLeft") {
-            moveLeft();
-        } else if (e.key === "ArrowRight") {
-            moveRight();
-        }
+moveListner = (e) => {
+    if (e.key === "ArrowUp") {
+        moveUp();
+    } else if (e.key === "ArrowDown") {
+        moveDown();
+    } else if (e.key === "ArrowLeft") {
+        moveLeft();
+    } else if (e.key === "ArrowRight") {
+        moveRight();
     }
+}
+
