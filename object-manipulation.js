@@ -35,6 +35,12 @@ class Circle {
         ctx.fill();
     }
 
+    /**
+     * after clicking if click coordinate is inside the circle
+     * @param {*} mouseOnX 
+     * @param {*} mouseOnY 
+     * @returns 
+     */
     isSelected(mouseOnX, mouseOnY) {
         const distance = Math.sqrt((mouseOnX - this.x) ** 2 + (mouseOnY - this.y) ** 2);
         return distance <= this.radius;
