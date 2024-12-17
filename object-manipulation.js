@@ -23,6 +23,11 @@ var clickedCircle = null;
 //Class for circle
 class Circle {
 
+    /**
+     * Here (x, y) is the coordinate of centre,
+     * radius is Radius of drawn circle,
+     * color is for filling the color of circle
+     */
     constructor(x, y, radius, color) {
         this.x = x;
         this.y = y;
@@ -30,6 +35,11 @@ class Circle {
         this.color = color;
     }
 
+
+    /**
+     * Used for drawing on canvas called from function drawOnCanvas()
+     * @param {*} ctx 
+     */
     drawShape(ctx) {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
