@@ -13,20 +13,23 @@ var removeCircleButton = document.querySelector('#remove-circle-button')
 //Map
 var circleMap = new Map();
 
-
 //By how much to move
 var movePx = 2;
 
 //current circle which is clicked
 var clickedCircle = null;
 
-//Class for circle
+/**
+ * Definition of circle
+ */
 class Circle {
 
     /**
-     * Here (x, y) is the coordinate of centre,
-     * radius is Radius of drawn circle,
-     * color is for filling the color of circle
+     * 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} radius 
+     * @param {String} color 
      */
     constructor(x, y, radius, color) {
         this.x = x;
@@ -38,7 +41,7 @@ class Circle {
 
     /**
      * Used for drawing on canvas called from function drawOnCanvas()
-     * @param {*} ctx 
+     * @param {HTMLCanvasElement} ctx 
      */
     drawShape(ctx) {
         ctx.beginPath();
@@ -49,8 +52,8 @@ class Circle {
 
     /**
      * after clicking if click coordinate is inside the circle
-     * @param {*} mouseOnX 
-     * @param {*} mouseOnY 
+     * @param {Number} mouseOnX 
+     * @param {Number} mouseOnY 
      * @returns 
      */
     isSelected(mouseOnX, mouseOnY) {
@@ -75,12 +78,24 @@ function upload() {
 }
 
 
-//radius of every circle
+
 // const radius = canvas.height / 10;
+
+/**
+ * radius of every circe
+ */
 const radius = 30;
+
+/**
+ * Key for every object in Map 
+ */
 var index = 0;
 
-//Function to check if circle is inside canvas
+/**
+ * 
+ * @param {Circle} circle 
+ * @returns true if we clicked inside the circle and false if click outside the circle
+ */
 function isInsideCanvas(circle) {
     if (circle.x - circle.radius < 0 || circle.x + circle.radius > canvas.width || circle.y - circle.radius < 0 || circle.y + circle.radius > canvas.height)
         return false;
@@ -115,7 +130,7 @@ function drawOnCanvas() {
 
 /**
  * Making and acessing event inside canvas and return the coordinates
- * @param {*} event 
+ * @param {MouseEvent} event 
  * @returns 
  */
 function mousePosition(event) {
@@ -151,7 +166,7 @@ canvas.addEventListener("mousedown", function (event) {
 });
 
 /**
- * for moving the object using arrow keys
+ * For moving the object using arrow keys
  */
 function moveObject() {
     window.addEventListener("keydown", moveListner);
@@ -194,14 +209,10 @@ moveListner = (e) => {
 }
 
 
-
-//Removing the circle button after clicking
-removeCircleButton.addEventListener("click", removeCircle);
-
 /**
  * getting object key by value used for deletion from map
  * @param {Map} map
- * @param {Object} object  
+ * @param {Circle} object  
  */
 function getKeyByValue(map, object) {
     for(let [key, value] of map.entries()) {
@@ -210,21 +221,35 @@ function getKeyByValue(map, object) {
     }
 }
 
-
 /**
- * For delayed deletion of circle
+ * Function is executing the task for deletion of object in 5 seconds
+ * @returns Promise which first delete the circle and then starts to delete another target one
  */
 function removeCircle() {
-    setTimeout(timeOutRemoveCircle, 5000);
+    return new Promise((resolve, reject) => {
+        if(clickedCircle == null) {
+            alert("No circle is Selected");
+            return;
+        }
+
+        let deletingCircle = clickedCircle;
+        clickedCircle = null;
+
+
+        setTimeout(() => {
+            const deletingKey = getKeyByValue(circleMap, deletingCircle);
+
+            if(circleMap.has(deletingKey)) {
+                circleMap.delete(deletingKey);
+                deletingCircle = null;
+                drawOnCanvas();
+            }
+        }, 5000)
+
+    })
 }
 
-/**
- * For deletion of selected circle from canvas 
- */
-function timeOutRemoveCircle() {
-    console.log("remove button clicked")
-    const keyOfSelectedCircle = getKeyByValue(circleMap, clickedCircle) 
-    console.log(keyOfSelectedCircle);
-    circleMap.delete(keyOfSelectedCircle);
-    drawOnCanvas();
-}
+//Removing the circle button after clicking
+removeCircleButton.addEventListener("click", () =>{
+    removeCircle();
+});
